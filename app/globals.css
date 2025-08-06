@@ -72,6 +72,8 @@ body {
 
   .modal-content {
     @apply bg-gray-800 border border-gray-700 rounded-xl overflow-hidden;
+    max-width: 95vw;
+    max-height: 95vh;
   }
 
   .nav-link {

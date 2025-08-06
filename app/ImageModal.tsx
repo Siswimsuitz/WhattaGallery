@@ -32,21 +32,27 @@ export default function ImageModal({ photo, onClose }: ImageModalProps) {
           </button>
 
           {/* Image Container */}
-          <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
-            <img
-              src={photo.image_url}
-              alt={photo.title}
-              className="max-w-full max-h-full object-contain"
-              style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto' }}
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                const fallback = document.createElement('div');
-                fallback.className = 'flex items-center justify-center bg-gray-700 text-4xl text-gray-500 w-full h-full';
-                fallback.textContent = '📷';
-                target.parentNode?.appendChild(fallback);
-              }}
-            />
+          <div className="flex-1 flex items-center justify-center p-4 overflow-hidden" style={{ minHeight: 0 }}>
+            <div className="w-full h-full flex items-center justify-center">
+              <img
+                src={photo.image_url}
+                alt={photo.title}
+                className="max-w-full max-h-full object-contain"
+                style={{ 
+                  maxWidth: '100%', 
+                  maxHeight: '100%',
+                  objectFit: 'contain'
+                }}
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const fallback = document.createElement('div');
+                  fallback.className = 'flex items-center justify-center bg-gray-700 text-4xl text-gray-500 w-full h-full';
+                  fallback.textContent = '📷';
+                  target.parentNode?.appendChild(fallback);
+                }}
+              />
+            </div>
           </div>
 
           {/* Photo details */}
