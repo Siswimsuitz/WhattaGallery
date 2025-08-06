@@ -65,6 +65,7 @@ export default function Home() {
   };
 
   const handlePhotoClick = (photo: Photo) => {
+    console.log('Photo clicked:', photo);
     setSelectedPhoto(photo);
   };
 
@@ -137,6 +138,18 @@ export default function Home() {
                  className="btn-secondary"
                >
                  📁 New Albumz
+               </button>
+               <button
+                 onClick={() => {
+                   const testPhoto = photos[0];
+                   if (testPhoto) {
+                     console.log('Testing modal with:', testPhoto);
+                     setSelectedPhoto(testPhoto);
+                   }
+                 }}
+                 className="btn-secondary"
+               >
+                 🧪 Test Modal
                </button>
              </div>
           </div>
@@ -304,10 +317,13 @@ export default function Home() {
       )}
 
       {selectedPhoto && (
-        <ImageModal 
-          photo={selectedPhoto}
-          onClose={() => setSelectedPhoto(null)}
-        />
+        <>
+          {console.log('Rendering modal for photo:', selectedPhoto)}
+          <ImageModal 
+            photo={selectedPhoto}
+            onClose={() => setSelectedPhoto(null)}
+          />
+        </>
       )}
     </main>
   );
