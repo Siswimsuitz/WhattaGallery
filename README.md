@@ -61,9 +61,14 @@ A beautiful and modern photo gallery built with Next.js 14, TypeScript, and Supa
        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
      );
      ```
-   - Create a `photos` storage bucket
+   - Create a `photos` storage bucket:
+     - Go to Storage in Supabase dashboard
+     - Create a new bucket named `photos`
+     - Set it to **Public** (not private)
+     - Enable RLS (Row Level Security)
    - Set up Row Level Security (RLS) policies:
      ```sql
+     -- Database policies
      -- Allow public read access to photos
      CREATE POLICY "Allow public read access" ON photos
      FOR SELECT USING (true);
@@ -79,6 +84,23 @@ A beautiful and modern photo gallery built with Next.js 14, TypeScript, and Supa
      -- Allow public insert access to albumz
      CREATE POLICY "Allow public insert access" ON albumz
      FOR INSERT WITH CHECK (true);
+
+     -- Storage policies (IMPORTANT!)
+     -- Allow public read access to storage
+     CREATE POLICY "Allow public read access" ON storage.objects
+     FOR SELECT USING (bucket_id = 'photos');
+
+     -- Allow public insert access to storage
+     CREATE POLICY "Allow public insert access" ON storage.objects
+     FOR INSERT WITH CHECK (bucket_id = 'photos');
+
+     -- Allow public update access to storage
+     CREATE POLICY "Allow public update access" ON storage.objects
+     FOR UPDATE USING (bucket_id = 'photos');
+
+     -- Allow public delete access to storage
+     CREATE POLICY "Allow public delete access" ON storage.objects
+     FOR DELETE USING (bucket_id = 'photos');
      ```
 
 5. **Run the development server**
@@ -161,6 +183,27 @@ photo-gallery/
    CREATE POLICY "Allow public insert access" ON photos
    FOR INSERT WITH CHECK (true);
    ```
+
+## 🚨 Troubleshooting
+
+### File Upload Issues
+If you get "row-level security policy" errors when uploading files:
+1. **Check storage bucket** - Make sure it's set to "Public" (not private)
+2. **Verify RLS policies** - Run the storage policies above
+3. **Check bucket name** - Must be exactly `photos`
+4. **Enable RLS** - Storage bucket must have RLS enabled
+
+### Image Display Issues
+If images don't display properly:
+1. **Check image URLs** - Verify they're accessible
+2. **Check CORS settings** - May need to configure CORS for external domains
+3. **Verify storage policies** - Read access must be enabled
+
+### Modal Image Sizing
+If images in the modal are too large:
+1. **Check browser console** for any errors
+2. **Verify image dimensions** - Very large images may need optimization
+3. **Test with different image sizes** to confirm scaling works
 
 ## 🤝 Contributing
 

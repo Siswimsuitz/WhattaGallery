@@ -32,11 +32,12 @@ export default function ImageModal({ photo, onClose }: ImageModalProps) {
           </button>
 
           {/* Image Container */}
-          <div className="flex-1 flex items-center justify-center p-4">
+          <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
             <img
               src={photo.image_url}
               alt={photo.title}
               className="max-w-full max-h-full object-contain"
+              style={{ maxWidth: '100%', maxHeight: '100%', width: 'auto', height: 'auto' }}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
                 target.style.display = 'none';
