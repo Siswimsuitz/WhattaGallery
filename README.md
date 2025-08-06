@@ -40,18 +40,46 @@ A beautiful and modern photo gallery built with Next.js 14, TypeScript, and Supa
 
 4. **Set up Supabase**
    - Create a new Supabase project
-   - Create a `photos` table with the following schema:
+   - Create the required tables with the following schema:
      ```sql
+     -- Photos table
      CREATE TABLE photos (
        id SERIAL PRIMARY KEY,
        title TEXT NOT NULL,
        description TEXT,
        image_url TEXT NOT NULL,
+       album_id INTEGER REFERENCES albums(id) ON DELETE SET NULL,
+       created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+     );
+
+     -- Albums table
+     CREATE TABLE albums (
+       id SERIAL PRIMARY KEY,
+       name TEXT NOT NULL,
+       description TEXT,
+       cover_image_url TEXT,
        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
      );
      ```
    - Create a `photos` storage bucket
-   - Set up Row Level Security (RLS) policies
+   - Set up Row Level Security (RLS) policies:
+     ```sql
+     -- Allow public read access to photos
+     CREATE POLICY "Allow public read access" ON photos
+     FOR SELECT USING (true);
+
+     -- Allow public insert access to photos
+     CREATE POLICY "Allow public insert access" ON photos
+     FOR INSERT WITH CHECK (true);
+
+     -- Allow public read access to albums
+     CREATE POLICY "Allow public read access" ON albums
+     FOR SELECT USING (true);
+
+     -- Allow public insert access to albums
+     CREATE POLICY "Allow public insert access" ON albums
+     FOR INSERT WITH CHECK (true);
+     ```
 
 5. **Run the development server**
    ```bash

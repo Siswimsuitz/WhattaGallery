@@ -5,12 +5,15 @@ import { supabase } from '../utils/supabaseClient';
 
 interface ImageUploadFormProps {
   onPhotoUploaded: () => void;
+  selectedAlbumId?: number;
 }
 
-export default function ImageUploadForm({ onPhotoUploaded }: ImageUploadFormProps) {
+export default function ImageUploadForm({ onPhotoUploaded, selectedAlbumId }: ImageUploadFormProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [file, setFile] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState('');
+  const [uploadMethod, setUploadMethod] = useState<'file' | 'url'>('file');
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -28,32 +31,70 @@ export default function ImageUploadForm({ onPhotoUploaded }: ImageUploadFormProp
     }
   };
 
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const url = e.target.value;
+    setImageUrl(url);
+    
+    if (url && isValidImageUrl(url)) {
+      setPreview(url);
+    } else {
+      setPreview(null);
+    }
+  };
+
+  const isValidImageUrl = (url: string) => {
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
+    return imageExtensions.some(ext => url.toLowerCase().includes(ext)) || 
+           url.includes('data:image/');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!file || !title.trim()) {
-      alert('Please select a file and enter a title');
+    if (!title.trim()) {
+      alert('Please enter a title');
+      return;
+    }
+
+    if (uploadMethod === 'file' && !file) {
+      alert('Please select a file');
+      return;
+    }
+
+    if (uploadMethod === 'url' && !imageUrl.trim()) {
+      alert('Please enter an image URL');
       return;
     }
 
     setUploading(true);
 
     try {
-      // Upload file to Supabase Storage
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `photos/${fileName}`;
+      let finalImageUrl = '';
 
-      const { error: uploadError } = await supabase.storage
-        .from('photos')
-        .upload(filePath, file);
+      if (uploadMethod === 'file' && file) {
+        // Upload file to Supabase Storage
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+        const filePath = `photos/${fileName}`;
 
-      if (uploadError) throw uploadError;
+        const { error: uploadError } = await supabase.storage
+          .from('photos')
+          .upload(filePath, file);
 
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('photos')
-        .getPublicUrl(filePath);
+        if (uploadError) {
+          console.error('Upload error:', uploadError);
+          throw new Error(`Upload failed: ${uploadError.message}`);
+        }
+
+        // Get public URL
+        const { data: { publicUrl } } = supabase.storage
+          .from('photos')
+          .getPublicUrl(filePath);
+
+        finalImageUrl = publicUrl;
+      } else if (uploadMethod === 'url') {
+        finalImageUrl = imageUrl.trim();
+      }
 
       // Save photo metadata to database
       const { error: insertError } = await supabase
@@ -61,15 +102,20 @@ export default function ImageUploadForm({ onPhotoUploaded }: ImageUploadFormProp
         .insert({
           title: title.trim(),
           description: description.trim(),
-          image_url: publicUrl,
+          image_url: finalImageUrl,
+          album_id: selectedAlbumId || null,
         });
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        console.error('Database error:', insertError);
+        throw new Error(`Database error: ${insertError.message}`);
+      }
 
       // Reset form
       setTitle('');
       setDescription('');
       setFile(null);
+      setImageUrl('');
       setPreview(null);
       
       // Notify parent component
@@ -78,7 +124,7 @@ export default function ImageUploadForm({ onPhotoUploaded }: ImageUploadFormProp
       alert('Photo uploaded successfully!');
     } catch (error) {
       console.error('Error uploading photo:', error);
-      alert('Error uploading photo. Please try again.');
+      alert(`Error uploading photo: ${error instanceof Error ? error.message : 'Please try again.'}`);
     } finally {
       setUploading(false);
     }
@@ -87,8 +133,8 @@ export default function ImageUploadForm({ onPhotoUploaded }: ImageUploadFormProp
   return (
     <form onSubmit={handleSubmit} className="upload-form">
       <div className="text-center mb-8">
-        <h2 className="text-3xl font-bold text-gray-800 mb-2">📤 Upload New Photo</h2>
-        <p className="text-gray-600">Share your beautiful moments with the world</p>
+        <h2 className="text-3xl font-bold text-gray-200 mb-2">📤 Upload New Photo</h2>
+        <p className="text-gray-400">Share your beautiful moments with the world</p>
       </div>
       
       <div className="space-y-6">
@@ -122,22 +168,70 @@ export default function ImageUploadForm({ onPhotoUploaded }: ImageUploadFormProp
         </div>
 
         <div>
-          <label htmlFor="file" className="label">
-            Choose Photo *
-          </label>
-          <div className="relative">
-            <input
-              type="file"
-              id="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="input-field file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-              required
-            />
+          <label className="label">Upload Method</label>
+          <div className="flex space-x-4 mb-4">
+            <button
+              type="button"
+              onClick={() => setUploadMethod('file')}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                uploadMethod === 'file' 
+                  ? 'bg-purple-600 text-white' 
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              📁 Upload File
+            </button>
+            <button
+              type="button"
+              onClick={() => setUploadMethod('url')}
+              className={`px-4 py-2 rounded-lg transition-colors ${
+                uploadMethod === 'url' 
+                  ? 'bg-purple-600 text-white' 
+                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+              }`}
+            >
+              🔗 Image URL
+            </button>
           </div>
-          <p className="text-sm text-gray-500 mt-1">
-            Supported formats: JPG, PNG, GIF, WebP (Max 10MB)
-          </p>
+
+          {uploadMethod === 'file' ? (
+            <div>
+              <label htmlFor="file" className="label">
+                Choose Photo *
+              </label>
+              <div className="relative">
+                <input
+                  type="file"
+                  id="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="input-field file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-600 file:text-white hover:file:bg-purple-700"
+                  required={uploadMethod === 'file'}
+                />
+              </div>
+              <p className="text-sm text-gray-400 mt-1">
+                Supported formats: JPG, PNG, GIF, WebP (Max 10MB)
+              </p>
+            </div>
+          ) : (
+            <div>
+              <label htmlFor="imageUrl" className="label">
+                Image URL *
+              </label>
+              <input
+                type="url"
+                id="imageUrl"
+                value={imageUrl}
+                onChange={handleUrlChange}
+                placeholder="https://example.com/image.jpg"
+                className="input-field"
+                required={uploadMethod === 'url'}
+              />
+              <p className="text-sm text-gray-400 mt-1">
+                Enter a direct link to an image (JPG, PNG, GIF, WebP)
+              </p>
+            </div>
+          )}
         </div>
 
         {preview && (
@@ -147,7 +241,7 @@ export default function ImageUploadForm({ onPhotoUploaded }: ImageUploadFormProp
               <img
                 src={preview}
                 alt="Preview"
-                className="w-full h-64 object-cover rounded-lg border-2 border-gray-200 shadow-sm"
+                className="w-full h-64 object-cover rounded-lg border-2 border-gray-600 shadow-sm"
               />
               <div className="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
                 Ready to upload
