@@ -76,6 +76,7 @@ body {
     max-height: 95vh;
     display: flex;
     flex-direction: column;
+    height: 95vh;
   }
 
   .nav-link {

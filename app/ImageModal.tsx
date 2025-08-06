@@ -44,29 +44,25 @@ export default function ImageModal({ photo, onClose }: ImageModalProps) {
           </div>
 
           {/* Image Container */}
-          <div className="flex-1 flex items-center justify-center p-4 bg-gray-900" style={{ minHeight: 0, maxHeight: 'calc(95vh - 200px)' }}>
-            <div className="w-full h-full flex items-center justify-center">
-              <img
-                src={photo.image_url}
-                alt={photo.title}
-                className="object-contain"
-                style={{ 
-                  maxWidth: '100%', 
-                  maxHeight: '100%',
-                  width: 'auto',
-                  height: 'auto',
-                  objectFit: 'contain'
-                }}
-                onError={(e) => {
-                  console.error('Image failed to load:', photo.image_url);
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                }}
-                onLoad={() => {
-                  console.log('Image loaded successfully:', photo.image_url);
-                }}
-              />
-            </div>
+          <div className="flex-1 flex items-center justify-center p-4 bg-gray-900 overflow-auto">
+            <img
+              src={photo.image_url}
+              alt={photo.title}
+              className="max-w-full max-h-full object-contain"
+              style={{ 
+                maxWidth: '100%', 
+                maxHeight: '100%',
+                objectFit: 'contain'
+              }}
+              onError={(e) => {
+                console.error('Image failed to load:', photo.image_url);
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+              }}
+              onLoad={() => {
+                console.log('Image loaded successfully:', photo.image_url);
+              }}
+            />
           </div>
 
           {/* Photo details */}
