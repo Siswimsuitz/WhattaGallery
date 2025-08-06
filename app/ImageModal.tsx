@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import SafeImage from './components/SafeImage';
 
 interface ImageModalProps {
   photo: {
@@ -32,12 +33,13 @@ export default function ImageModal({ photo, onClose }: ImageModalProps) {
 
           {/* Image */}
           <div className="relative max-h-[70vh] overflow-hidden">
-            <Image
+            <SafeImage
               src={photo.image_url}
               alt={photo.title}
               width={800}
               height={600}
               className="w-full h-auto object-contain"
+              fallback="📷"
             />
           </div>
 

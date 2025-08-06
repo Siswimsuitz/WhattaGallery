@@ -6,6 +6,7 @@ import { supabase, Albumz, Photo } from '../utils/supabaseClient';
 import ImageUploadForm from './ImageUploadForm';
 import AlbumForm from './AlbumForm';
 import ImageModal from './ImageModal';
+import SafeImage from './components/SafeImage';
 
 type ViewMode = 'gallery' | 'albums';
 
@@ -69,7 +70,9 @@ export default function Home() {
 
   const getFilteredPhotos = () => {
     if (selectedAlbumzId) {
-      return photos.filter(photo => photo.albumz_id === selectedAlbumzId);
+      const filtered = photos.filter(photo => photo.albumz_id === selectedAlbumzId);
+      console.log('Filtered photos for albumz:', selectedAlbumzId, filtered);
+      return filtered;
     }
     return photos;
   };
@@ -189,6 +192,7 @@ export default function Home() {
                albumz.map((album) => {
                  const albumPhotos = photos.filter(photo => photo.albumz_id === album.id);
                  const coverPhoto = albumPhotos[0];
+                 console.log('Album:', album.name, 'Photos:', albumPhotos, 'Cover:', coverPhoto);
                 
                 return (
                                      <div 
@@ -198,11 +202,12 @@ export default function Home() {
                    >
                     <div className="relative h-48 overflow-hidden">
                       {coverPhoto ? (
-                        <Image
+                        <SafeImage
                           src={coverPhoto.image_url}
                           alt={album.name}
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          fallback="📁"
                         />
                       ) : (
                         <div className="w-full h-full bg-gray-700 flex items-center justify-center">
@@ -256,11 +261,12 @@ export default function Home() {
                   onClick={() => handlePhotoClick(photo)}
                 >
                   <div className="relative h-64 overflow-hidden">
-                    <Image
+                    <SafeImage
                       src={photo.image_url}
                       alt={photo.title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      fallback="📷"
                     />
                     <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div>
                   </div>
