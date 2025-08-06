@@ -50,37 +50,60 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl font-bold text-center mb-8 text-gray-800">
-          📸 Photo Gallery
-        </h1>
+        <div className="text-center mb-12">
+          <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            📸 WhattaGallery
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Upload, store, and showcase your beautiful photos with our modern gallery platform
+          </p>
+        </div>
         
         <ImageUploadForm onPhotoUploaded={handlePhotoUploaded} />
         
         <div className="gallery-grid">
           {photos.length === 0 ? (
-            <div className="col-span-full text-center py-12">
-              <p className="text-gray-600 text-lg">
-                No photos yet. Upload your first photo to get started!
-              </p>
+            <div className="col-span-full text-center py-16">
+              <div className="max-w-md mx-auto">
+                <div className="text-6xl mb-4">📷</div>
+                <h3 className="text-2xl font-semibold text-gray-700 mb-2">
+                  No photos yet
+                </h3>
+                <p className="text-gray-600">
+                  Upload your first photo to get started! Your gallery will appear here once you add some images.
+                </p>
+              </div>
             </div>
           ) : (
             photos.map((photo) => (
-              <div key={photo.id} className="photo-card">
-                <div className="relative h-64">
+              <div key={photo.id} className="photo-card group">
+                <div className="relative h-64 overflow-hidden">
                   <Image
                     src={photo.image_url}
                     alt={photo.title}
                     fill
-                    className="object-cover"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
+                  <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300"></div>
                 </div>
-                <div className="p-4">
-                  <h3 className="text-xl font-semibold mb-2">{photo.title}</h3>
-                  <p className="text-gray-600 mb-2">{photo.description}</p>
-                  <p className="text-sm text-gray-500">
-                    {new Date(photo.created_at).toLocaleDateString()}
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold mb-2 text-gray-800 group-hover:text-blue-600 transition-colors">
+                    {photo.title}
+                  </h3>
+                  {photo.description && (
+                    <p className="text-gray-600 mb-3 line-clamp-2">
+                      {photo.description}
+                    </p>
+                  )}
+                  <p className="text-sm text-gray-500 flex items-center">
+                    <span className="mr-2">📅</span>
+                    {new Date(photo.created_at).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
                   </p>
                 </div>
               </div>
