@@ -18,6 +18,12 @@ interface ImageModalProps {
 export default function ImageModal({ photo, onClose }: ImageModalProps) {
   if (!photo) return null;
 
+  console.log('ImageModal rendering with photo:', {
+    id: photo.id,
+    title: photo.title,
+    image_url: photo.image_url
+  });
+
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content max-w-[95vw] max-h-[95vh]" onClick={(e) => e.stopPropagation()}>
@@ -33,13 +39,37 @@ export default function ImageModal({ photo, onClose }: ImageModalProps) {
           </button>
 
           {/* Image Container */}
-          <div className="flex-1 flex items-center justify-center p-4 overflow-hidden" style={{ minHeight: 0 }}>
-            <FittedImage
+          <div className="flex-1 flex items-center justify-center p-4 overflow-hidden bg-gray-900" style={{ minHeight: 0 }}>
+            <img
               src={photo.image_url}
               alt={photo.title}
-              className="w-full h-full"
-              fallback="📷"
+              className="max-w-full max-h-full object-contain"
+              style={{ 
+                maxWidth: '100%', 
+                maxHeight: '100%',
+                objectFit: 'contain'
+              }}
+              onError={(e) => {
+                console.error('Image failed to load:', photo.image_url);
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const fallback = document.createElement('div');
+                fallback.className = 'flex items-center justify-center bg-gray-700 text-4xl text-gray-500 w-full h-full';
+                fallback.textContent = '📷';
+                target.parentNode?.appendChild(fallback);
+              }}
+              onLoad={() => {
+                console.log('Image loaded successfully:', photo.image_url);
+              }}
             />
+            {/* Fallback if image doesn't load */}
+            <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">
+              <div className="text-center">
+                <div className="text-4xl mb-2">📷</div>
+                <div>Loading image...</div>
+                <div className="text-xs mt-1">{photo.image_url}</div>
+              </div>
+            </div>
           </div>
 
           {/* Photo details */}
