@@ -155,19 +155,6 @@ export default function Home() {
                >
                  📁 New Albumz
                </button>
-               <button
-                 onClick={() => {
-                   const testPhoto = photos[0];
-                   if (testPhoto) {
-                     console.log('Testing modal with:', testPhoto);
-                     setSelectedPhoto(testPhoto);
-                     document.body.classList.add('modal-open');
-                   }
-                 }}
-                 className="btn-secondary"
-               >
-                 🧪 Test Modal
-               </button>
              </div>
           </div>
         </div>
