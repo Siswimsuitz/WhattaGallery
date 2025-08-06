@@ -45,6 +45,7 @@ export default function SafeImage({
         onLoad={() => setLoading(false)}
         onError={() => setError(true)}
         unoptimized={true}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
       />
       {loading && (
         <div className={`absolute inset-0 flex items-center justify-center bg-gray-700 ${className}`}>

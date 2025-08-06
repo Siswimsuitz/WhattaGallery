@@ -19,32 +19,34 @@ export default function ImageModal({ photo, onClose }: ImageModalProps) {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-        <div className="relative">
+      <div className="modal-content max-w-[95vw] max-h-[95vh]" onClick={(e) => e.stopPropagation()}>
+        <div className="relative flex flex-col h-full">
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-10 bg-gray-800 hover:bg-gray-700 text-white rounded-full p-2 transition-colors"
+            className="absolute top-4 right-4 z-20 bg-gray-800 hover:bg-gray-700 text-white rounded-full p-2 transition-colors"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
 
-          {/* Image */}
-          <div className="relative max-h-[70vh] overflow-hidden">
-            <SafeImage
-              src={photo.image_url}
-              alt={photo.title}
-              width={800}
-              height={600}
-              className="w-full h-auto object-contain"
-              fallback="📷"
-            />
+          {/* Image Container */}
+          <div className="flex-1 flex items-center justify-center p-4 overflow-auto">
+            <div className="relative max-w-full max-h-full">
+              <SafeImage
+                src={photo.image_url}
+                alt={photo.title}
+                width={0}
+                height={0}
+                className="max-w-full max-h-full w-auto h-auto object-contain"
+                fallback="📷"
+              />
+            </div>
           </div>
 
           {/* Photo details */}
-          <div className="p-6 bg-gray-800 border-t border-gray-700">
+          <div className="p-6 bg-gray-800 border-t border-gray-700 flex-shrink-0">
             <h3 className="text-2xl font-bold text-gray-200 mb-2">{photo.title}</h3>
             {photo.description && (
               <p className="text-gray-400 mb-3">{photo.description}</p>
