@@ -23,6 +23,13 @@ export default function Home() {
     fetchData();
   }, []);
 
+  // Cleanup modal-open class when component unmounts
+  useEffect(() => {
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, []);
+
   const fetchData = async () => {
     try {
       // Fetch photos
@@ -67,6 +74,7 @@ export default function Home() {
   const handlePhotoClick = (photo: Photo) => {
     console.log('Photo clicked:', photo);
     setSelectedPhoto(photo);
+    document.body.classList.add('modal-open');
   };
 
   const getFilteredPhotos = () => {
@@ -145,6 +153,7 @@ export default function Home() {
                    if (testPhoto) {
                      console.log('Testing modal with:', testPhoto);
                      setSelectedPhoto(testPhoto);
+                     document.body.classList.add('modal-open');
                    }
                  }}
                  className="btn-secondary"
@@ -321,7 +330,10 @@ export default function Home() {
           {console.log('Rendering modal for photo:', selectedPhoto)}
           <ImageModal 
             photo={selectedPhoto}
-            onClose={() => setSelectedPhoto(null)}
+            onClose={() => {
+              setSelectedPhoto(null);
+              document.body.classList.remove('modal-open');
+            }}
           />
         </>
       )}
