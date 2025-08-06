@@ -44,19 +44,17 @@ export default function ImageModal({ photo, onClose }: ImageModalProps) {
           </div>
 
           {/* Image Container */}
-          <div className="flex-1 flex items-center justify-center p-4 overflow-hidden bg-gray-900" style={{ minHeight: 0 }}>
-            <div className="text-center text-white">
-              <div className="text-2xl mb-4">🖼️ Image Modal</div>
-              <div className="mb-2">Title: {photo.title}</div>
-              <div className="mb-4">URL: {photo.image_url}</div>
-              
+          <div className="flex-1 flex items-center justify-center p-4 bg-gray-900" style={{ minHeight: 0, maxHeight: 'calc(95vh - 200px)' }}>
+            <div className="w-full h-full flex items-center justify-center">
               <img
                 src={photo.image_url}
                 alt={photo.title}
-                className="max-w-full max-h-full object-contain border-2 border-red-500"
+                className="object-contain"
                 style={{ 
                   maxWidth: '100%', 
                   maxHeight: '100%',
+                  width: 'auto',
+                  height: 'auto',
                   objectFit: 'contain'
                 }}
                 onError={(e) => {
@@ -68,10 +66,6 @@ export default function ImageModal({ photo, onClose }: ImageModalProps) {
                   console.log('Image loaded successfully:', photo.image_url);
                 }}
               />
-              
-              <div className="mt-4 text-sm text-gray-400">
-                If you see this text, the modal is working but the image might not be loading.
-              </div>
             </div>
           </div>
 

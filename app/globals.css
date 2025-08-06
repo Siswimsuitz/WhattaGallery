@@ -74,6 +74,8 @@ body {
     @apply bg-gray-800 border border-gray-700 rounded-xl overflow-hidden;
     max-width: 95vw;
     max-height: 95vh;
+    display: flex;
+    flex-direction: column;
   }
 
   .nav-link {
