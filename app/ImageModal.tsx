@@ -32,17 +32,20 @@ export default function ImageModal({ photo, onClose }: ImageModalProps) {
           </button>
 
           {/* Image Container */}
-          <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
-            <div className="relative w-full h-full flex items-center justify-center">
-              <SafeImage
-                src={photo.image_url}
-                alt={photo.title}
-                width={0}
-                height={0}
-                className="max-w-full max-h-full w-auto h-auto object-contain"
-                fallback="📷"
-              />
-            </div>
+          <div className="flex-1 flex items-center justify-center p-4">
+            <img
+              src={photo.image_url}
+              alt={photo.title}
+              className="max-w-full max-h-full object-contain"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const fallback = document.createElement('div');
+                fallback.className = 'flex items-center justify-center bg-gray-700 text-4xl text-gray-500 w-full h-full';
+                fallback.textContent = '📷';
+                target.parentNode?.appendChild(fallback);
+              }}
+            />
           </div>
 
           {/* Photo details */}
