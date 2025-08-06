@@ -4,32 +4,36 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../utils/supabaseClient";
+import ImageUploadForm from "./ImageUploadForm";
 
 export default function Home() {
-  const [photos, setPhotos] = useState<string[]>([]);
+  const [photos, setPhotos] = useState<any[]>([]);
+  const [albums, setAlbums] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchPhotos() {
-      // List all images in the 'photos' bucket
-      const { data, error } = await supabase.storage.from("photos").list("", { limit: 100 });
-      if (error) {
-        setLoading(false);
-        return;
-      }
-      if (data) {
-        // Get public URLs for each image
-        const urls = data
-          .filter((item) => item.name.match(/\.(jpg|jpeg|png|webp)$/i))
-          .map((item) =>
-            supabase.storage.from("photos").getPublicUrl(item.name).data.publicUrl
-          );
-        setPhotos(urls);
-      }
+    async function fetchImagesAndAlbums() {
+      setLoading(true);
+      // Fetch albums
+      const { data: albumData } = await supabase.from("albums").select();
+      setAlbums(albumData || []);
+      // Fetch images
+      const { data: imageData } = await supabase.from("images").select();
+      setPhotos(imageData || []);
       setLoading(false);
     }
-    fetchPhotos();
+    fetchImagesAndAlbums();
   }, []);
+
+  // For refresh after upload
+  const handleUpload = async () => {
+    setLoading(true);
+    const { data: albumData } = await supabase.from("albums").select();
+    setAlbums(albumData || []);
+    const { data: imageData } = await supabase.from("images").select();
+    setPhotos(imageData || []);
+    setLoading(false);
+  };
 
   return (
     <div className={styles.page}>
@@ -49,27 +53,67 @@ export default function Home() {
       </section>
       <section id="gallery" className={styles.gallerySection}>
         <h3 className={styles.sectionTitle}>Gallery</h3>
+        <ImageUploadForm onUpload={handleUpload} />
         {loading ? (
           <div style={{ textAlign: "center", padding: "40px 0" }}>Loading photos...</div>
         ) : (
-          <div className={styles.galleryGrid}>
-            {photos.length === 0 ? (
-              <div style={{ gridColumn: "1/-1", textAlign: "center" }}>No photos found.</div>
-            ) : (
-              photos.map((src, i) => (
-                <div className={styles.galleryItem} key={i}>
-                  <Image
-                    src={src}
-                    alt={`Gallery photo ${i + 1}`}
-                    width={400}
-                    height={500}
-                    className={styles.galleryImage}
-                    placeholder="blur"
-                    blurDataURL="/placeholder.png"
-                  />
-                </div>
-              ))
+          <div>
+            {/* Group by album */}
+            {albums.length > 0 && (
+              <div>
+                {albums.map((album) => (
+                  <div key={album.id} style={{ marginBottom: 32 }}>
+                    <h4>{album.name}</h4>
+                    <div className={styles.galleryGrid}>
+                      {photos.filter((img) => img.album_id === album.id).length === 0 ? (
+                        <div style={{ gridColumn: "1/-1", textAlign: "center" }}>No photos in this album.</div>
+                      ) : (
+                        photos
+                          .filter((img) => img.album_id === album.id)
+                          .map((img, i) => (
+                            <div className={styles.galleryItem} key={img.id || i}>
+                              <Image
+                                src={img.url}
+                                alt={`Gallery photo ${i + 1}`}
+                                width={400}
+                                height={500}
+                                className={styles.galleryImage}
+                                placeholder="blur"
+                                blurDataURL="/placeholder.png"
+                              />
+                            </div>
+                          ))
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
+            {/* Photos without album */}
+            <div>
+              <h4>Unsorted</h4>
+              <div className={styles.galleryGrid}>
+                {photos.filter((img) => !img.album_id).length === 0 ? (
+                  <div style={{ gridColumn: "1/-1", textAlign: "center" }}>No unsorted photos.</div>
+                ) : (
+                  photos
+                    .filter((img) => !img.album_id)
+                    .map((img, i) => (
+                      <div className={styles.galleryItem} key={img.id || i}>
+                        <Image
+                          src={img.url}
+                          alt={`Gallery photo ${i + 1}`}
+                          width={400}
+                          height={500}
+                          className={styles.galleryImage}
+                          placeholder="blur"
+                          blurDataURL="/placeholder.png"
+                        />
+                      </div>
+                    ))
+                )}
+              </div>
+            </div>
           </div>
         )}
       </section>
