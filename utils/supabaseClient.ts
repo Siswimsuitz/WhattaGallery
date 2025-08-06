@@ -6,7 +6,7 @@ const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
 // Database types
-export interface Album {
+export interface Albumz {
   id: number;
   name: string;
   description: string;
@@ -19,6 +19,6 @@ export interface Photo {
   title: string;
   description: string;
   image_url: string;
-  album_id?: number;
+  albumz_id?: number;
   created_at: string;
 }

@@ -48,12 +48,12 @@ A beautiful and modern photo gallery built with Next.js 14, TypeScript, and Supa
        title TEXT NOT NULL,
        description TEXT,
        image_url TEXT NOT NULL,
-       album_id INTEGER REFERENCES albums(id) ON DELETE SET NULL,
+       albumz_id INTEGER REFERENCES albumz(id) ON DELETE SET NULL,
        created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
      );
 
-     -- Albums table
-     CREATE TABLE albums (
+     -- Albumz table
+     CREATE TABLE albumz (
        id SERIAL PRIMARY KEY,
        name TEXT NOT NULL,
        description TEXT,
@@ -72,12 +72,12 @@ A beautiful and modern photo gallery built with Next.js 14, TypeScript, and Supa
      CREATE POLICY "Allow public insert access" ON photos
      FOR INSERT WITH CHECK (true);
 
-     -- Allow public read access to albums
-     CREATE POLICY "Allow public read access" ON albums
+     -- Allow public read access to albumz
+     CREATE POLICY "Allow public read access" ON albumz
      FOR SELECT USING (true);
 
-     -- Allow public insert access to albums
-     CREATE POLICY "Allow public insert access" ON albums
+     -- Allow public insert access to albumz
+     CREATE POLICY "Allow public insert access" ON albumz
      FOR INSERT WITH CHECK (true);
      ```
 
@@ -92,8 +92,11 @@ A beautiful and modern photo gallery built with Next.js 14, TypeScript, and Supa
 ## 🎯 Usage
 
 1. **Upload Photos**: Use the upload form to add new photos with titles and descriptions
-2. **View Gallery**: Browse all uploaded photos in a responsive grid layout
-3. **Real-time Updates**: New photos appear immediately after upload
+2. **Create Albumz**: Organize your photos into collections called "albumz"
+3. **View Gallery**: Browse all uploaded photos in a responsive grid layout
+4. **View Albumz**: Click on albumz to see photos organized by collection
+5. **Full-size View**: Click any photo to view it in full size
+6. **Real-time Updates**: New photos appear immediately after upload
 
 ## 🚀 Deployment
 

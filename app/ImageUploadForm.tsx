@@ -5,10 +5,10 @@ import { supabase } from '../utils/supabaseClient';
 
 interface ImageUploadFormProps {
   onPhotoUploaded: () => void;
-  selectedAlbumId?: number;
+  selectedAlbumzId?: number;
 }
 
-export default function ImageUploadForm({ onPhotoUploaded, selectedAlbumId }: ImageUploadFormProps) {
+export default function ImageUploadForm({ onPhotoUploaded, selectedAlbumzId }: ImageUploadFormProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [file, setFile] = useState<File | null>(null);
@@ -103,7 +103,7 @@ export default function ImageUploadForm({ onPhotoUploaded, selectedAlbumId }: Im
           title: title.trim(),
           description: description.trim(),
           image_url: finalImageUrl,
-          album_id: selectedAlbumId || null,
+          albumz_id: selectedAlbumzId || null,
         });
 
       if (insertError) {

@@ -25,7 +25,7 @@ export default function AlbumForm({ onAlbumCreated, onCancel }: AlbumFormProps) 
 
     try {
       const { error } = await supabase
-        .from('albums')
+        .from('albumz')
         .insert({
           name: name.trim(),
           description: description.trim(),

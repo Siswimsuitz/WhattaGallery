@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { supabase, Album, Photo } from '../utils/supabaseClient';
+import { supabase, Albumz, Photo } from '../utils/supabaseClient';
 import ImageUploadForm from './ImageUploadForm';
 import AlbumForm from './AlbumForm';
 import ImageModal from './ImageModal';
@@ -11,10 +11,10 @@ type ViewMode = 'gallery' | 'albums';
 
 export default function Home() {
   const [photos, setPhotos] = useState<Photo[]>([]);
-  const [albums, setAlbums] = useState<Album[]>([]);
+  const [albumz, setAlbumz] = useState<Albumz[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<ViewMode>('gallery');
-  const [selectedAlbumId, setSelectedAlbumId] = useState<number | null>(null);
+  const [selectedAlbumzId, setSelectedAlbumzId] = useState<number | null>(null);
   const [showAlbumForm, setShowAlbumForm] = useState(false);
   const [selectedPhoto, setSelectedPhoto] = useState<Photo | null>(null);
 
@@ -32,16 +32,16 @@ export default function Home() {
 
       if (photosError) throw photosError;
 
-      // Fetch albums
-      const { data: albumsData, error: albumsError } = await supabase
-        .from('albums')
+      // Fetch albumz
+      const { data: albumzData, error: albumzError } = await supabase
+        .from('albumz')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (albumsError) throw albumsError;
+      if (albumzError) throw albumzError;
 
       setPhotos(photosData || []);
-      setAlbums(albumsData || []);
+      setAlbumz(albumzData || []);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -58,8 +58,8 @@ export default function Home() {
     setShowAlbumForm(false);
   };
 
-  const handleAlbumClick = (albumId: number) => {
-    setSelectedAlbumId(albumId);
+  const handleAlbumzClick = (albumzId: number) => {
+    setSelectedAlbumzId(albumzId);
     setViewMode('gallery');
   };
 
@@ -68,14 +68,14 @@ export default function Home() {
   };
 
   const getFilteredPhotos = () => {
-    if (selectedAlbumId) {
-      return photos.filter(photo => photo.album_id === selectedAlbumId);
+    if (selectedAlbumzId) {
+      return photos.filter(photo => photo.albumz_id === selectedAlbumzId);
     }
     return photos;
   };
 
-  const getCurrentAlbum = () => {
-    return albums.find(album => album.id === selectedAlbumId);
+  const getCurrentAlbumz = () => {
+    return albumz.find(album => album.id === selectedAlbumzId);
   };
 
   if (loading) {
@@ -102,100 +102,100 @@ export default function Home() {
               </h1>
               
               <div className="flex space-x-4">
-                <button
-                  onClick={() => {
-                    setViewMode('gallery');
-                    setSelectedAlbumId(null);
-                  }}
-                  className={`nav-link ${viewMode === 'gallery' && !selectedAlbumId ? 'nav-link-active' : ''}`}
-                >
-                  📷 All Photos
-                </button>
-                <button
-                  onClick={() => setViewMode('albums')}
-                  className={`nav-link ${viewMode === 'albums' ? 'nav-link-active' : ''}`}
-                >
-                  📁 Albums
-                </button>
-                {selectedAlbumId && (
-                  <button
-                    onClick={() => setSelectedAlbumId(null)}
-                    className="nav-link"
-                  >
-                    ← Back to All
-                  </button>
-                )}
+                                 <button
+                   onClick={() => {
+                     setViewMode('gallery');
+                     setSelectedAlbumzId(null);
+                   }}
+                   className={`nav-link ${viewMode === 'gallery' && !selectedAlbumzId ? 'nav-link-active' : ''}`}
+                 >
+                   📷 All Photos
+                 </button>
+                 <button
+                   onClick={() => setViewMode('albums')}
+                   className={`nav-link ${viewMode === 'albums' ? 'nav-link-active' : ''}`}
+                 >
+                   📁 Albumz
+                 </button>
+                 {selectedAlbumzId && (
+                   <button
+                     onClick={() => setSelectedAlbumzId(null)}
+                     className="nav-link"
+                   >
+                     ← Back to All
+                   </button>
+                 )}
               </div>
             </div>
 
-            <div className="flex space-x-4">
-              <button
-                onClick={() => setShowAlbumForm(true)}
-                className="btn-secondary"
-              >
-                📁 New Album
-              </button>
-            </div>
+                         <div className="flex space-x-4">
+               <button
+                 onClick={() => setShowAlbumForm(true)}
+                 className="btn-secondary"
+               >
+                 📁 New Albumz
+               </button>
+             </div>
           </div>
         </div>
       </nav>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Album Header */}
-        {selectedAlbumId && getCurrentAlbum() && (
-          <div className="text-center mb-8">
-            <h2 className="text-4xl font-bold text-gray-200 mb-2">
-              📁 {getCurrentAlbum()?.name}
-            </h2>
-            {getCurrentAlbum()?.description && (
-              <p className="text-xl text-gray-400 max-w-2xl mx-auto">
-                {getCurrentAlbum()?.description}
-              </p>
-            )}
-          </div>
-        )}
+                 {/* Albumz Header */}
+         {selectedAlbumzId && getCurrentAlbumz() && (
+           <div className="text-center mb-8">
+             <h2 className="text-4xl font-bold text-gray-200 mb-2">
+               📁 {getCurrentAlbumz()?.name}
+             </h2>
+             {getCurrentAlbumz()?.description && (
+               <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+                 {getCurrentAlbumz()?.description}
+               </p>
+             )}
+           </div>
+         )}
 
-        {/* Upload Form */}
-        {viewMode === 'gallery' && (
-          <ImageUploadForm 
-            onPhotoUploaded={handlePhotoUploaded} 
-            selectedAlbumId={selectedAlbumId || undefined}
-          />
-        )}
+                 {/* Upload Form */}
+         {viewMode === 'gallery' && (
+           <ImageUploadForm 
+             onPhotoUploaded={handlePhotoUploaded} 
+             selectedAlbumzId={selectedAlbumzId || undefined}
+           />
+         )}
 
-        {/* Content */}
-        {viewMode === 'albums' ? (
-          // Albums View
-          <div className="album-grid">
-            {albums.length === 0 ? (
-              <div className="col-span-full text-center py-16">
-                <div className="max-w-md mx-auto">
-                  <div className="text-6xl mb-4">📁</div>
-                  <h3 className="text-2xl font-semibold text-gray-200 mb-2">
-                    No albums yet
-                  </h3>
-                  <p className="text-gray-400 mb-6">
-                    Create your first album to organize your photos!
-                  </p>
-                  <button
-                    onClick={() => setShowAlbumForm(true)}
-                    className="btn"
-                  >
-                    📁 Create Album
-                  </button>
-                </div>
-              </div>
-            ) : (
-              albums.map((album) => {
-                const albumPhotos = photos.filter(photo => photo.album_id === album.id);
-                const coverPhoto = albumPhotos[0];
+                 {/* Content */}
+         {viewMode === 'albums' ? (
+           // Albumz View
+           <div className="album-grid">
+             {albumz.length === 0 ? (
+               <div className="col-span-full text-center py-16">
+                 <div className="max-w-md mx-auto">
+                   <div className="text-6xl mb-4">📁</div>
+                   <h3 className="text-2xl font-semibold text-gray-200 mb-2">
+                     No albumz yet
+                   </h3>
+                   <p className="text-gray-400 mb-6">
+                     Create your first albumz to organize your photos!
+                   </p>
+                   <button
+                     onClick={() => setShowAlbumForm(true)}
+                     className="btn"
+                   >
+                     📁 Create Albumz
+                   </button>
+                 </div>
+               </div>
+             ) : (
+               albumz.map((album) => {
+                 const albumPhotos = photos.filter(photo => photo.albumz_id === album.id);
+                 const coverPhoto = albumPhotos[0];
                 
                 return (
-                  <div 
-                    key={album.id} 
-                    className="album-card group"
-                    onClick={() => handleAlbumClick(album.id)}
-                  >
+                                     <div 
+                     key={album.id} 
+                     className="album-card group"
+                     onClick={() => handleAlbumzClick(album.id)}
+                   >
                     <div className="relative h-48 overflow-hidden">
                       {coverPhoto ? (
                         <Image
@@ -231,23 +231,23 @@ export default function Home() {
             )}
           </div>
         ) : (
-          // Gallery View
-          <div className="gallery-grid">
-            {getFilteredPhotos().length === 0 ? (
-              <div className="col-span-full text-center py-16">
-                <div className="max-w-md mx-auto">
-                  <div className="text-6xl mb-4">📷</div>
-                  <h3 className="text-2xl font-semibold text-gray-200 mb-2">
-                    {selectedAlbumId ? 'No photos in this album' : 'No photos yet'}
-                  </h3>
-                  <p className="text-gray-400">
-                    {selectedAlbumId 
-                      ? 'Upload photos to this album to get started!' 
-                      : 'Upload your first photo to get started! Your gallery will appear here once you add some images.'
-                    }
-                  </p>
-                </div>
-              </div>
+                     // Gallery View
+           <div className="gallery-grid">
+             {getFilteredPhotos().length === 0 ? (
+               <div className="col-span-full text-center py-16">
+                 <div className="max-w-md mx-auto">
+                   <div className="text-6xl mb-4">📷</div>
+                   <h3 className="text-2xl font-semibold text-gray-200 mb-2">
+                     {selectedAlbumzId ? 'No photos in this albumz' : 'No photos yet'}
+                   </h3>
+                   <p className="text-gray-400">
+                     {selectedAlbumzId 
+                       ? 'Upload photos to this albumz to get started!' 
+                       : 'Upload your first photo to get started! Your gallery will appear here once you add some images.'
+                     }
+                   </p>
+                 </div>
+               </div>
             ) : (
               getFilteredPhotos().map((photo) => (
                 <div 
