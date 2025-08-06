@@ -38,36 +38,39 @@ export default function ImageModal({ photo, onClose }: ImageModalProps) {
             </svg>
           </button>
 
+          {/* Debug Info */}
+          <div className="absolute top-4 left-4 z-20 bg-red-500 text-white p-2 rounded text-xs">
+            Modal Active - Photo ID: {photo.id}
+          </div>
+
           {/* Image Container */}
           <div className="flex-1 flex items-center justify-center p-4 overflow-hidden bg-gray-900" style={{ minHeight: 0 }}>
-            <img
-              src={photo.image_url}
-              alt={photo.title}
-              className="max-w-full max-h-full object-contain"
-              style={{ 
-                maxWidth: '100%', 
-                maxHeight: '100%',
-                objectFit: 'contain'
-              }}
-              onError={(e) => {
-                console.error('Image failed to load:', photo.image_url);
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-                const fallback = document.createElement('div');
-                fallback.className = 'flex items-center justify-center bg-gray-700 text-4xl text-gray-500 w-full h-full';
-                fallback.textContent = '📷';
-                target.parentNode?.appendChild(fallback);
-              }}
-              onLoad={() => {
-                console.log('Image loaded successfully:', photo.image_url);
-              }}
-            />
-            {/* Fallback if image doesn't load */}
-            <div className="absolute inset-0 flex items-center justify-center text-gray-500 text-sm">
-              <div className="text-center">
-                <div className="text-4xl mb-2">📷</div>
-                <div>Loading image...</div>
-                <div className="text-xs mt-1">{photo.image_url}</div>
+            <div className="text-center text-white">
+              <div className="text-2xl mb-4">🖼️ Image Modal</div>
+              <div className="mb-2">Title: {photo.title}</div>
+              <div className="mb-4">URL: {photo.image_url}</div>
+              
+              <img
+                src={photo.image_url}
+                alt={photo.title}
+                className="max-w-full max-h-full object-contain border-2 border-red-500"
+                style={{ 
+                  maxWidth: '100%', 
+                  maxHeight: '100%',
+                  objectFit: 'contain'
+                }}
+                onError={(e) => {
+                  console.error('Image failed to load:', photo.image_url);
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                }}
+                onLoad={() => {
+                  console.log('Image loaded successfully:', photo.image_url);
+                }}
+              />
+              
+              <div className="mt-4 text-sm text-gray-400">
+                If you see this text, the modal is working but the image might not be loading.
               </div>
             </div>
           </div>

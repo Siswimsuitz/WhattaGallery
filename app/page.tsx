@@ -73,6 +73,14 @@ export default function Home() {
 
   const handlePhotoClick = (photo: Photo) => {
     console.log('Photo clicked:', photo);
+    console.log('Image URL:', photo.image_url);
+    console.log('Photo data:', {
+      id: photo.id,
+      title: photo.title,
+      description: photo.description,
+      image_url: photo.image_url,
+      created_at: photo.created_at
+    });
     setSelectedPhoto(photo);
     document.body.classList.add('modal-open');
   };
